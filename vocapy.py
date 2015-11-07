@@ -1,20 +1,22 @@
 #! /usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 # Script Name:          vocapy.py
 # Author:               Alejandro Druetta
-# Version:              0.2
+# Version:              0.3
 #
 # Description:          Aplicación para el aprendizaje de vocabulario de
 #                       lenguas extranjeras.
 
 import time
+import gettext
+import locale
 import tkinter as tk
+import webbrowser
 from tkinter import messagebox
-from classes import WordList, PercentBar, Session, GameRound
+from classes import WordList, PercentBar, Session, PracticeRound, ConfDict
+from classes import DEBUG
 from constructor import ConstList
-
-DEBUG = True
-MINWORDS = 5
 
 
 class VocapyApp(tk.Tk):
@@ -27,6 +29,7 @@ class VocapyApp(tk.Tk):
         self.padding = 20
 
         # General settings
+        self.version = '0.3'
         self.option_add('*font', 'helvetica 11')
         self.option_add('*Entry.font', 'helvetica 12')
         self.option_add('*Listbox.font', 'helvetica 12')
@@ -38,16 +41,29 @@ class VocapyApp(tk.Tk):
         # Shortcuts
         self.protocol("WM_DELETE_WINDOW", self.destroyWin)
         self.bind('<Control-q>', self.destroyWin)
-        self.bind('<Control-a>', self.constructorcall)
-        self.bind('<Control-e>', self.statscall)
-        self.bind_all('<F1>', self.helpWin)
+        self.bind('<Control-a>', self.constructorCall)
+        self.bind('<Control-e>', self.statsCall)
+        self.urlHelp = 'https://github.com/aledruetta/vocapy'
+        self.bind_all('<F1>', lambda e: self.openUrl(self.urlHelp))
 
+        # Configurations
+        self.cf_dict = ConfDict()
+        self.cf_dict.load()
+        self.lang = self.cf_dict.setdefault('lang', locale.getlocale()[0])
+
+        # Localization
+        self.i18n()
+
+        # Game
+        self.minWords = 5
         self.session = Session(time.time(), attempts=0, guess=0)
         self.word_list = WordList()
         self.main_window()
-        self.play_game()
+        self.practice()
 
     def main_window(self):
+
+        # Menu
         self.menuBar()
 
         # Background
@@ -93,7 +109,7 @@ class VocapyApp(tk.Tk):
 
         # Next word button
         self.buttonF = tk.Button(labelFrameApp)
-        self.buttonF['command'] = self.play_game
+        self.buttonF['command'] = self.practice
         self.buttonF['text'] = '-->'
         self.buttonF['font'] = ('Arial Black', 20, 'bold')
         self.buttonF['bg'] = 'snow'
@@ -113,15 +129,14 @@ class VocapyApp(tk.Tk):
         self.textS.tag_configure('guess', background='#CBE148')
         self.textS.tag_configure('wrong', background='#EEB0AB')
         self.textS.pack(fill='x', expand='yes')
-
         self.percentbar()
 
-    def play_game(self, event=None):
-        while len(self.word_list) < MINWORDS:
+    def practice(self, event=None):
+        while len(self.word_list) < self.minWords:
             self.list_complete()
 
-        # Game round
-        self.gr = GameRound(self.word_list)
+        # Practice round
+        self.gr = PracticeRound(self.word_list)
 
         if DEBUG:
             print(self.gr)
@@ -152,7 +167,7 @@ class VocapyApp(tk.Tk):
         guess = self.user_guess.get()
         if guess == self.gr.target:
             button['selectcolor'] = '#CBE148'
-            # Update guess
+        # Update guess
             self.gr.word.guess += 1
             self.session.guess += 1
             result = True
@@ -167,46 +182,46 @@ class VocapyApp(tk.Tk):
         for i in range(4):
             self.radiobuttons[i]['state'] = 'disabled'
 
-        # New round game
+        # New practice round
         self.buttonF['state'] = 'normal'
-        self.buttonF.bind('<Return>', self.play_game)
+        self.buttonF.bind('<Return>', self.practice)
         self.buttonF.focus_set()
 
     def show_result(self, success):
-        title = 'Resultado'
+        title = _('Resultado')
         padl = 4 * ' '
         padr = 12 * ' '
 
         # Messagebox
         if success:
-            message = '\n{}Resultado: Correcto!{}'.format(padl, padr)
-            messagebox.showinfo(title, message)
+            message = _('\n{}Resultado: Correcto!{}').format(padl, padr)
+            messagebox.showinfo(title, message, parent=self)
         else:
-            message = '{0}Resultado: Incorrecto!{1}\n{0}{2}: {3}{1}'.format(
+            message = _('{0}Resultado: Incorrecto!{1}\n{0}{2}: {3}{1}').format(
                 padl, padr, self.gr.word.name, self.gr.target)
-            messagebox.showerror(title, message)
+            messagebox.showerror(title, message, parent=self)
 
     def list_complete(self):
         # Messagebox
-        message = '''El diccionario posee {} términos.
+        message = _('''El diccionario posee {} términos.
 Antes de jugar debería añadir al menos {} términos al diccionario.
-'''.format(len(self.word_list), MINWORDS - len(self.word_list))
-        messagebox.showinfo('Advertencia', message)
+''').format(len(self.word_list), self.minWords - len(self.word_list))
+        messagebox.showinfo(_('Advertencia'), message, parent=self)
 
-        self.constructorcall()
+        self.constructorCall()
 
     def percentbar(self):
         attempts = self.session.attempts
         percent = self.session.percent
 
-        start = len(str(attempts)) + 10
-        info = '{} palabras  [{}{} aciertos]'.format(attempts, percent, '%')
+        start = len(str(attempts)) + len(_('palabras')) + 2
+        info = _('{} palabras  [{}{} aciertos]').format(attempts, percent, '%')
 
         self.textS['state'] = 'normal'
         self.textS.delete('1.0', tk.END)
         self.textS.insert('1.0', info)
 
-        percentbar = PercentBar(
+        pBar = PercentBar(
             self.textS,
             start=(1, start),
             lenght=30,
@@ -214,100 +229,166 @@ Antes de jugar debería añadir al menos {} términos al diccionario.
             percent=percent,
             colors=('#CBE148', '#EEB0AB')
             )
-        percentbar.create()
+        pBar.create()
 
         self.textS['state'] = 'disabled'
 
-    def constructorcall(self, event=None):
+    def constructorCall(self, event=None):
         self.unbind('<Control-a>')
         constructor = ConstList(self)
         constructor.wait_window()
         self.word_list = constructor.word_list
-        self.bind('<Control-a>', self.constructorcall)
+        self.bind('<Control-a>', self.constructorCall)
 
-    def statscall(self, event=None):
+    def statsCall(self, event=None):
         self.unbind('<Control-e>')
         statistics = Statistics(self)
         statistics.wait_window()
-        self.bind('<Control-e>', self.statscall)
+        self.bind('<Control-e>', self.statsCall)
 
     def menuBar(self):
-        menubar = tk.Menu(self)
-        self.config(menu=menubar)
+        menuBar = tk.Menu(self)
+        self.config(menu=menuBar)
 
         # Archivo
-        filemenu = tk.Menu(menubar, tearoff=0)
-        filemenu.add_command(
-            label='Agregar palabras',
+        fileMenu = tk.Menu(menuBar, tearoff=0)
+        fileMenu.add_command(
+            label=_('Agregar palabras'),
             accelerator='Ctrl+A',
-            command=self.constructorcall
+            command=self.constructorCall
             )
-        filemenu.add_command(
-            label='Eliminar palabra',
+        fileMenu.add_command(
+            label=_('Eliminar palabra'),
             accelerator='Ctrl+D',
-            command=self.delword
+            command=self.delWord
             )
-        self.bind('<Control-d>', self.delword)
-        filemenu.add_command(
-            label='Borrar todo',
+        self.bind('<Control-d>', self.delWord)
+        fileMenu.add_command(
+            label=_('Borrar todo'),
             command=self.clear
             )
-        filemenu.add_separator()
-        filemenu.add_command(
-            label='Ver estadísticas',
+        fileMenu.add_separator()
+
+        langMenu = tk.Menu(fileMenu, tearoff=0)        # Language
+        fileMenu.add_cascade(label=_('Lenguaje'), menu=langMenu)
+        langs_lst = [_('español'), _('portugués'), _('inglés')]
+        for l in langs_lst:
+            langMenu.add_radiobutton(label=l, indicatoron=0,
+                                     command=lambda arg0=l: self.setLang(arg0)
+                                     )
+
+        fileMenu.add_separator()
+        fileMenu.add_command(
+            label=_('Ver estadísticas'),
             accelerator='Ctrl+E',
-            command=self.statscall
+            command=self.statsCall
             )
-        filemenu.add_separator()
-        filemenu.add_command(
-            label='Salir',
+        fileMenu.add_separator()
+        fileMenu.add_command(
+            label=_('Salir'),
             accelerator='Ctrl+Q',
             command=self.destroyWin
             )
-        menubar.add_cascade(label='Archivo', menu=filemenu)
+        menuBar.add_cascade(label=_('Archivo'), menu=fileMenu)
 
         # Ayuda
-        helpmenu = tk.Menu(menubar, tearoff=0)
-        helpmenu.add_command(
-            label='Ayuda',
+        helpMenu = tk.Menu(menuBar, tearoff=0)
+        helpMenu.add_command(
+            label=_('Ayuda'),
             accelerator='F1',
-            command=self.helpWin
+            command=lambda: self.openUrl(self.urlHelp)
             )
-        helpmenu.add_command(label='Sobre')
-        menubar.add_cascade(label='Ayuda', menu=helpmenu)
+        helpMenu.add_command(label=_('Sobre'), command=self.about)
+        menuBar.add_cascade(label=_('Ayuda'), menu=helpMenu)
 
-    def delword(self, event=None):
-        m = 'Está seguro de que quiere eliminar {} del diccionario?'.format(
+    def openUrl(self, url, event=None):
+        webbrowser.open(url)
+
+    def about(self):
+        """About messagebox"""
+
+        title = _('Sobre')
+        message = """
+                    VocaPy
+                      v{}
+
+              MIT License (MIT)
+Copyright (c) 2014 Alejandro Druetta\t
+ https://github.com/aledruetta/vocapy
+    """.format(self.version)
+        messagebox.showinfo(title, message, parent=self)
+
+    def setLang(self, arg0):
+        if arg0 == _('español'):
+            self.lang = 'es_AR'
+        elif arg0 == _('portugués'):
+            self.lang = 'pt_BR'
+        elif arg0 == _('inglés'):
+            self.lang = 'en_US'
+
+        self.cf_dict.save('lang', self.lang)
+        self.i18n()
+        self.menuBar()
+        self.percentbar()
+
+        if DEBUG:
+            print('\nmenu: {}\n'.format(self.lang))
+
+    def delWord(self, event=None):
+        m = _('Está seguro de que quiere eliminar {} del diccionario?').format(
             self.gr.word.name)
-        t = 'Eliminar Palabra'
-        if messagebox.askokcancel(t, m, default='cancel'):
+        t = _('Eliminar Palabra')
+        if messagebox.askokcancel(t, m, default='cancel', parent=self):
             self.word_list.remove_db(self.gr.word)
+            if DEBUG:
+                print("\n", self.word_list)
 
-        self.play_game()
+        self.practice()
 
     def clear(self):
-        m = 'Está seguro de que quiere eliminar el diccionario?'
-        t = 'Eliminar Diccionario'
-        if messagebox.askokcancel(t, m, default='cancel'):
+        m = _('Está seguro de que quiere eliminar el diccionario?')
+        t = _('Eliminar Diccionario')
+        if messagebox.askokcancel(t, m, default='cancel', parent=self):
             self.word_list.clear()
 
-        self.play_game()
+        self.practice()
 
     def destroyWin(self, event=None):
         self.session.append_db()
         if DEBUG:
-            print(self.session.sessions_lst)
+            print("\n{}\n".format(self.session.sessions_lst))
         self.destroy()
 
-    def helpWin(self, event=None):
-        if DEBUG:
-            print('help')
+    def i18n(self):
+        """
+        Localization:
+            1. 'string' to _('string')
+            2. File's list to potfiles.in
+            3. To create .pot file:
+                $ xgettext --files-from=potfiles.in --directory=../.. \
+                    --output=messages.pot --language=Python --from-code=utf-8
+            4. Edit message.pot with poedit
+            5. Put in locale/lang/LC_MESSAGES/
+            6. To update:
+                $ msgmerge --update --no-fuzzy-matching --buckup=off \
+                    ../../locale/lang/LC_MESSAGES/messages.po messages.pot
+                Edit message.po with poedit
+        """
+
+        try:
+            lang = gettext.translation('messages', localedir='locale',
+                                       languages=[self.lang])
+        except (OSError, AttributeError) as err:
+            lang = gettext.NullTranslations()
+            if DEBUG:
+                print("\nError: {}".format(err))
+        lang.install()
 
 
 class Statistics(tk.Toplevel):
     def __init__(self, master):
         super().__init__(master)
-        self.title('Estadísticas')
+        self.title(_('Estadísticas'))
         self.resizable(0, 0)
 
         self.bind('<Control-q>', self.destroyWin)

@@ -1,20 +1,22 @@
 #! /usr/bin/env python3
+# -*- coding: iso-8859-1 -*-
 
 # Script Name:          classes.py
 # Author:               Alejandro Druetta
-# Version:              0.2
+# Version:              0.3
 #
 # Description:          Aplicación para el aprendizaje de vocabulario de
 #                       lenguas extranjeras.
 
 import time
 import subprocess
+import random
 from operator import itemgetter
 import sqlite3 as sql
-import random
 
 DATABASE = 'database.db'
 _PRAGMA = "PRAGMA foreign_keys = ON"
+DEBUG = True
 
 
 class VocapyWord:
@@ -30,6 +32,7 @@ class VocapyWord:
     @property
     def percent(self):
         """Porcentaje de aciertos en relación a la cantidad de intentos"""
+
         try:
             return int(self.guess * 100 / self.attempts)
         except ZeroDivisionError:
@@ -39,12 +42,14 @@ class VocapyWord:
 
     def rand_mean(self):
         """Uno de los significados de la palabra al azar"""
+
         return random.choice(self.means)
 
     def update_db(self):
         """Actualiza los datos en DB del objeto VocapyWord"""
+
         self.last_time = time.time()        # Actualiza el tiempo
-        conn = sql.connect(DATABASE)       # de visualización
+        conn = sql.connect(DATABASE)        # de visualización
         with conn:
             cur = conn.cursor()
             cur.execute(_PRAGMA)
@@ -59,7 +64,7 @@ class VocapyWord:
             conn.commit()
 
     def __repr__(self):
-        return "VocapyWord: {}, {}, {}, {}, {}".format(
+        return "{}: {}, {}, {}, {}".format(
             self.name,
             self.last_time,
             self.attempts,
@@ -77,6 +82,7 @@ class WordList(list):
 
     def db_load(self):
         """Construye WordList a partir de los datos en DB"""
+
         conn = sql.connect(DATABASE)
         with conn:
             cur = conn.cursor()
@@ -93,7 +99,8 @@ class WordList(list):
                 )
 
     def append_db(self, word):
-        """Agrega un elemento a WordList"""
+        """Agrega un elemento a WordList y a DB"""
+
         conn = sql.connect(DATABASE)
         with conn:
             cur = conn.cursor()
@@ -108,7 +115,8 @@ class WordList(list):
         super().append(word)
 
     def remove_db(self, word):
-        """Remueve un elemento de WordList"""
+        """Remueve un elemento de WordList y de DB"""
+
         conn = sql.connect(DATABASE)
         with conn:
             cur = conn.cursor()
@@ -121,7 +129,8 @@ class WordList(list):
         super().remove(word)
 
     def clear(self):
-        """Limpia WordList y la base de datos"""
+        """Limpia WordList y DB"""
+
         super().clear()
         subprocess.call(['rm', DATABASE])
         subprocess.check_output("cat schema.sql | sqlite3 {}".format(DATABASE),
@@ -129,6 +138,7 @@ class WordList(list):
 
     def sort_by_attr(self, attr):
         """Ordena WordList por atributo de VocapyWord"""
+
         # Lista de tuplas con formato (palabra, atributo)
         word_attr = [(word, word.__getattribute__(attr)) for word in self]
         # itemgetter(1) permite ordenar por el segundo elemento de
@@ -137,23 +147,23 @@ class WordList(list):
 
         return [word for word, attribute in word_attr]
 
-    @property
     def oldest(self):
         """El elemento que lleva más tiempo sin ser visualizado"""
+
         return self.sort_by_attr('last_time')[0]
 
-    @property
     def worst(self):
         """El elemento con peor porcentaje"""
+
         return self.sort_by_attr('percent')[0]
 
-    @property
     def random(self):
-        """Un elemento aleatóreamente escogido"""
+        """Un elemento aleatóreo"""
+
         return random.choice(self)
 
 
-class GameRound:
+class PracticeRound:
     """Objeto representando cada una de las rondas de juego"""
 
     def __init__(self, word_list):
@@ -168,37 +178,43 @@ class GameRound:
             - El que tiene peor porcentaje
             - Un elemento aleatóreo
         """
-        self.oldest = self._word_list.oldest
-        self.worst = self._word_list.worst
-        self.random = self._word_list.random
 
-        return random.choice([self.oldest, self.worst, self.random])
+        wl = self._word_list
+        foos = [wl.oldest, wl.worst, wl.random]     # Function objects
+        foo = random.choice(foos)
+
+        if DEBUG:
+            print("\nselected: {}".format(foo.__name__))
+
+        return foo()        # Call function
 
     def select_choices(self):
         """Selecciona las opciones presentadas al jugador"""
+
         means_set = {self.target}
         while len(means_set) < 4:
-            rand_word = self._word_list.random
+            rand_word = self._word_list.random()
             fake = rand_word.rand_mean()
             if fake not in self.word.means:
                 means_set.add(fake)
-        means_lst = list(means_set)
-        random.shuffle(means_lst)
+        choices_lst = list(means_set)
+        random.shuffle(choices_lst)
 
-        return means_lst
+        return choices_lst
 
     def __repr__(self):
         return """
     {}
-    Oldest: {} [last_time: {}]
-    Worst:  {} [percent: {}]
-    Random: {}""".format(
-            self.word.name, self.oldest.name, self.oldest.last_time,
-            self.worst.name, self.worst.percent, self.random.name
-            )
+    [last_time: {}]
+    [percent: {}]
+    """.format(self.word.name, self.word.last_time, self.word.percent)
 
 
 class Session:
+    """Lleva un historial de los resultados de cada sesión de juego.
+       Una sesión es lo que sucede desde que se accede hasta que se cierra la
+       aplicación.
+    """
 
     def __init__(self, last_time, attempts, guess):
         self.last_time = last_time
@@ -207,6 +223,8 @@ class Session:
 
     @property
     def percent(self):
+        """Proporción de aciertos en relación a intentos"""
+
         try:
             return int(self.guess * 100 / self.attempts)
         except ZeroDivisionError:
@@ -216,6 +234,8 @@ class Session:
 
     @property
     def sessions_lst(self):
+        """Lista de sesiones almacenadas en DB"""
+
         conn = sql.connect(DATABASE)
         with conn:
             cur = conn.cursor()
@@ -224,6 +244,8 @@ class Session:
             return fetch
 
     def append_db(self):
+        """Almacena la sesión actual a DB"""
+
         if self.attempts:
             conn = sql.connect(DATABASE)
             with conn:
@@ -235,6 +257,9 @@ class Session:
 
 
 class PercentBar:
+    """Barra de porcentaje de aciertos en relación a intentos en la parte
+       inferior de la ventana principal.
+    """
 
     def __init__(self, text, start, lenght, char, percent, colors):
         self.text = text        # Object tk.Text
@@ -264,6 +289,30 @@ class PercentBar:
         self.text.insert(seg1_start, segment1 + segment2)
         self.text.tag_add('segment1', seg1_start, seg1_end)
         self.text.tag_add('segment2', seg2_start, seg2_end)
+
+
+class ConfDict(dict):
+
+    def load(self):
+        """Carga los datos de configuración en DB, en forma de diccionario"""
+
+        conn = sql.connect(DATABASE)
+        with conn:
+            cur = conn.cursor()
+            fetch = cur.execute("SELECT conf_ID, value FROM configs").fetchall()
+            for key, value in fetch:
+                self[key] = value
+        if DEBUG:
+            print('\nconfigs: \n{}'.format(self))
+
+    def save(self, conf, value):
+        """Registra en DB las alteraciones de configuración"""
+
+        conn = sql.connect(DATABASE)
+        with conn:
+            cur = conn.cursor()
+            cur.execute("INSERT or REPLACE INTO configs (conf_ID, value) \
+                        VALUES (?, ?)", (conf, value))
 
 
 def main():

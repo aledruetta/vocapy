@@ -3,7 +3,8 @@
 import sqlite3 as sql
 import csv
 
-_database = 'database.db'
+_database = '../../database.db'
+
 
 def populate_db():
     """
@@ -23,12 +24,14 @@ def populate_db():
         cur = conn.cursor()
         cur.execute("PRAGMA foreign_keys = ON")
         for word, last_time, attempts, guess, means in words:
-            cur.execute("INSERT INTO words VALUES (?, ?, ?, ?)", (word, last_time, attempts, guess))
+            cur.execute("INSERT INTO words VALUES (?, ?, ?, ?)",
+                        (word, last_time, attempts, guess))
             for mean in means:
                 cur.execute("INSERT INTO means VALUES(?, ?)", (word, mean))
         conn.commit()
         print(cur.execute("SELECT * FROM words").fetchall())
         print(cur.execute("SELECT * FROM means").fetchall())
+
 
 def main():
     populate_db()

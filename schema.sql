@@ -20,3 +20,8 @@ CREATE TABLE sessions
     guess    INTEGER NOT NULL
 );
 
+CREATE TABLE configs
+(
+    conf_ID TEXT PRIMARY KEY NOT NULL,
+    value   TEXT NOT NULL
+);

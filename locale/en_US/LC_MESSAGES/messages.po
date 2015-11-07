@@ -1,0 +1,164 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-11-12 17:59-0200\n"
+"PO-Revision-Date: 2015-11-12 18:04-0200\n"
+"Last-Translator: Alejandro Druetta <aledruetta@gmail.com>\n"
+"Language-Team: \n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.4\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: constructor.py:25
+msgid "Constructor"
+msgstr "Constructor"
+
+#: constructor.py:48
+msgid "Palabra:"
+msgstr "Word:"
+
+#: constructor.py:68
+msgid "Significado:"
+msgstr "Mean:"
+
+#: constructor.py:98 constructor.py:166
+msgid " palabras"
+msgstr " words"
+
+#: constructor.py:102
+msgid "Avanzar"
+msgstr "Next"
+
+#: constructor.py:108
+msgid "Limpiar"
+msgstr "Clear"
+
+#: constructor.py:161
+msgid "No es posible adicionar palabras o significados repetidos a la base de datos."
+msgstr "Isn't possible to add duplicated words or means."
+
+#: constructor.py:163 vocapy.py:207
+msgid "Advertencia"
+msgstr "Warning"
+
+#: vocapy.py:189
+msgid "Resultado"
+msgstr "Result"
+
+#: vocapy.py:195
+msgid ""
+"\n"
+"{}Resultado: Correcto!{}"
+msgstr ""
+"\n"
+"{}Result: Correct!{}"
+
+#: vocapy.py:198
+#, python-brace-format
+msgid ""
+"{0}Resultado: Incorrecto!{1}\n"
+"{0}{2}: {3}{1}"
+msgstr ""
+"{0}Result: Wrong!{1}\n"
+"{0}{2}: {3}{1}"
+
+#: vocapy.py:204
+msgid ""
+"El diccionario posee {} términos.\n"
+"Antes de jugar debería añadir al menos {} términos al diccionario.\n"
+msgstr ""
+"The dictionary has {} words.\n"
+"Before play you should append at least {} words to the dictionary.\n"
+
+#: vocapy.py:215
+msgid "palabras"
+msgstr "words"
+
+#: vocapy.py:216
+msgid "{} palabras  [{}{} aciertos]"
+msgstr "{} words  [{}{} hits]"
+
+#: vocapy.py:254
+msgid "Agregar palabras"
+msgstr "Add words"
+
+#: vocapy.py:259
+msgid "Eliminar palabra"
+msgstr "Delete word"
+
+#: vocapy.py:265
+msgid "Borrar todo"
+msgstr "Delete all"
+
+#: vocapy.py:271
+msgid "Lenguaje"
+msgstr "Language"
+
+#: vocapy.py:272 vocapy.py:314
+msgid "español"
+msgstr "spanish"
+
+#: vocapy.py:272 vocapy.py:316
+msgid "portugués"
+msgstr "portugese"
+
+#: vocapy.py:272 vocapy.py:318
+msgid "inglés"
+msgstr "english"
+
+#: vocapy.py:279
+msgid "Ver estadísticas"
+msgstr "Stats"
+
+#: vocapy.py:285
+msgid "Salir"
+msgstr "Exit"
+
+#: vocapy.py:289
+msgid "Archivo"
+msgstr "File"
+
+#: vocapy.py:294 vocapy.py:299
+msgid "Ayuda"
+msgstr "Help"
+
+#: vocapy.py:298 vocapy.py:302
+msgid "Sobre"
+msgstr "About"
+
+#: vocapy.py:310
+msgid "Autor"
+msgstr "Author"
+
+#: vocapy.py:330
+msgid "Está seguro de que quiere eliminar {} del diccionario?"
+msgstr "You want to delete {} from dictionary?"
+
+#: vocapy.py:332
+msgid "Eliminar Palabra"
+msgstr "Delete Word"
+
+#: vocapy.py:341
+msgid "Está seguro de que quiere eliminar el diccionario?"
+msgstr "You want to clear the dictionary?"
+
+#: vocapy.py:342
+msgid "Eliminar Diccionario"
+msgstr "Clear Dictionary"
+
+#: vocapy.py:356
+msgid "ayuda"
+msgstr "help"
+
+#: vocapy.py:387
+msgid "Estadísticas"
+msgstr "Stats"

@@ -1,8 +1,9 @@
 #! /usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 # Script Name:          constructor.py
 # Author:               Alejandro Druetta
-# Version:              0.2
+# Version:              0.3
 #
 # Description:          Aplicación para el aprendizaje de vocabulario de
 #                       lenguas extranjeras.
@@ -11,17 +12,17 @@ import tkinter as tk
 import sqlite3 as sql
 from tkinter import messagebox
 from classes import VocapyWord
-
-DEBUG = True
+from classes import DEBUG
 
 
 class ConstList(tk.Toplevel):
+
     def __init__(self, master):
         super().__init__(master)
         self.word_list = master.word_list
 
         # Window geometry
-        self.title('Constructor')
+        self.title(_('Constructor'))
         self.resizable(0, 0)
         self.padding = 20
 
@@ -44,7 +45,7 @@ class ConstList(tk.Toplevel):
                     pady=self.padding)
 
         labelW = tk.Label(frameW)
-        labelW['text'] = 'Palabra:'
+        labelW['text'] = _('Palabra:')
         labelW.pack(side='left')
 
         self.entryW = tk.Entry(frameW)
@@ -64,7 +65,7 @@ class ConstList(tk.Toplevel):
                      pady=self.padding)
 
         labelM = tk.Label(frameM1)
-        labelM['text'] = 'Significado:'
+        labelM['text'] = _('Significado:')
         labelM.pack(side='left')
 
         self.entryM = tk.Entry(frameM1)
@@ -94,17 +95,17 @@ class ConstList(tk.Toplevel):
         self.labelF = tk.Label(frameF)
         self.labelF['font'] = 'Arial 9 italic'
         lenght = len(self.word_list)
-        self.labelF['text'] = str(lenght) + ' palabras'
+        self.labelF['text'] = str(lenght) + _(' palabras')
         self.labelF.pack(side='left')
 
         self.buttonA = tk.Button(frameF)
-        self.buttonA['text'] = 'Avanzar'
+        self.buttonA['text'] = _('Avanzar')
         self.buttonA['command'] = self.forward
         self.buttonA['width'] = 8
         self.buttonA.pack(side='right')
 
         self.buttonL = tk.Button(frameF)
-        self.buttonL['text'] = 'Limpiar'
+        self.buttonL['text'] = _('Limpiar')
         self.buttonL['command'] = self.clear
         self.buttonL['width'] = 8
         self.buttonL.pack(side='right')
@@ -157,12 +158,12 @@ class ConstList(tk.Toplevel):
         try:
             self.word_list.append_db(self.word)
         except sql.IntegrityError:
-            message = 'No es posible adicionar palabras o significados ' \
-                'repetidos a la base de datos.'
-            messagebox.showinfo('Advertencia', message)
+            message = _('No es posible adicionar palabras o significados \
+repetidos a la base de datos.')
+            messagebox.showinfo(_('Advertencia'), message, parent=self)
 
         lenght = len(self.word_list)
-        self.labelF['text'] = str(lenght) + ' palabras'
+        self.labelF['text'] = str(lenght) + _(' palabras')
 
         self.clear()
 
