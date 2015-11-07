@@ -1,2 +1,6 @@
-__pycache__
+*~
+*.sw[pon]
 *.pyc
+*.db-journal
+*.ropeproject/
+

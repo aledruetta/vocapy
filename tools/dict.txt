@@ -134,7 +134,7 @@ GET HOME,0,0,0.0,llegar a casa
 GIVE,0,0,0.0,dar,ofrecer,permitir
 GIVE IN,0,0,0.0,ceder,rendirse
 GIVE UP,0,0,0.0,abandonar,rendirse,renunciar
-GIVEN,0,0,0.0,dado
+GIVEN,1,1,1445603880.2134035,dado
 GO AWAY,0,0,0.0,desaparecer,marcharse
 GOTCHAS,0,0,0.0,trampas
 GRASP,0,0,0.0,agarrar,agarre,alcance,comprender,comprensión,entender
