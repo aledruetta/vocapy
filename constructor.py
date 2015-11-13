@@ -3,7 +3,7 @@
 
 # Script Name:          constructor.py
 # Author:               Alejandro Druetta
-# Version:              0.3
+# Version:              0.4
 #
 # Description:          Aplicación para el aprendizaje de vocabulario de
 #                       lenguas extranjeras.

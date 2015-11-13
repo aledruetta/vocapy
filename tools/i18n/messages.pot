@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-12 17:59-0200\n"
+"POT-Creation-Date: 2015-11-16 20:18-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,113 +46,116 @@ msgid ""
 "No es posible adicionar palabras o significados repetidos a la base de datos."
 msgstr ""
 
-#: constructor.py:163 vocapy.py:207
+#: constructor.py:163 statistics.py:25 vocapy.py:210
 msgid "Advertencia"
 msgstr ""
 
-#: vocapy.py:189
+#: statistics.py:26
+msgid ""
+"\n"
+"No hay sesiones previas guardadas                         en la base de "
+"datos."
+msgstr ""
+
+#: statistics.py:31
+msgid "Estadísticas"
+msgstr ""
+
+#: statistics.py:37 statistics.py:62 vocapy.py:218
+msgid "palabras"
+msgstr ""
+
+#: statistics.py:62
+msgid "de"
+msgstr ""
+
+#: vocapy.py:192
 msgid "Resultado"
 msgstr ""
 
-#: vocapy.py:195
+#: vocapy.py:198
 msgid ""
 "\n"
 "{}Resultado: Correcto!{}"
 msgstr ""
 
-#: vocapy.py:198
+#: vocapy.py:201
 #, python-brace-format
 msgid ""
 "{0}Resultado: Incorrecto!{1}\n"
 "{0}{2}: {3}{1}"
 msgstr ""
 
-#: vocapy.py:204
+#: vocapy.py:207
 msgid ""
 "El diccionario posee {} términos.\n"
 "Antes de jugar debería añadir al menos {} términos al diccionario.\n"
 msgstr ""
 
-#: vocapy.py:215
-msgid "palabras"
-msgstr ""
-
-#: vocapy.py:216
+#: vocapy.py:219
 msgid "{} palabras  [{}{} aciertos]"
 msgstr ""
 
-#: vocapy.py:254
+#: vocapy.py:262
 msgid "Agregar palabras"
 msgstr ""
 
-#: vocapy.py:259
+#: vocapy.py:267
 msgid "Eliminar palabra"
 msgstr ""
 
-#: vocapy.py:265
+#: vocapy.py:273
 msgid "Borrar todo"
 msgstr ""
 
-#: vocapy.py:271
+#: vocapy.py:279
 msgid "Lenguaje"
 msgstr ""
 
-#: vocapy.py:272 vocapy.py:314
+#: vocapy.py:280 vocapy.py:328
 msgid "español"
 msgstr ""
 
-#: vocapy.py:272 vocapy.py:316
+#: vocapy.py:280 vocapy.py:330
 msgid "portugués"
 msgstr ""
 
-#: vocapy.py:272 vocapy.py:318
+#: vocapy.py:280 vocapy.py:332
 msgid "inglés"
 msgstr ""
 
-#: vocapy.py:279
+#: vocapy.py:288
 msgid "Ver estadísticas"
 msgstr ""
 
-#: vocapy.py:285
+#: vocapy.py:294
 msgid "Salir"
 msgstr ""
 
-#: vocapy.py:289
+#: vocapy.py:298
 msgid "Archivo"
 msgstr ""
 
-#: vocapy.py:294 vocapy.py:299
+#: vocapy.py:303 vocapy.py:308
 msgid "Ayuda"
 msgstr ""
 
-#: vocapy.py:298 vocapy.py:302
+#: vocapy.py:307 vocapy.py:316
 msgid "Sobre"
 msgstr ""
 
-#: vocapy.py:310
-msgid "Autor"
-msgstr ""
-
-#: vocapy.py:330
+#: vocapy.py:344
 msgid "Está seguro de que quiere eliminar {} del diccionario?"
 msgstr ""
 
-#: vocapy.py:332
+#: vocapy.py:346
 msgid "Eliminar Palabra"
 msgstr ""
 
-#: vocapy.py:341
+#: vocapy.py:355
 msgid "Está seguro de que quiere eliminar el diccionario?"
 msgstr ""
 
-#: vocapy.py:342
-msgid "Eliminar Diccionario"
-msgstr ""
-
 #: vocapy.py:356
-msgid "ayuda"
-msgstr ""
-
-#: vocapy.py:387
-msgid "Estadísticas"
+msgid "Eliminar Diccionario"
 msgstr ""

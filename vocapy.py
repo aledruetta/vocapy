@@ -3,7 +3,7 @@
 
 # Script Name:          vocapy.py
 # Author:               Alejandro Druetta
-# Version:              0.3
+# Version:              0.4
 #
 # Description:          Aplicación para el aprendizaje de vocabulario de
 #                       lenguas extranjeras.
@@ -17,6 +17,7 @@ from tkinter import messagebox
 from classes import WordList, PercentBar, Session, PracticeRound, ConfDict
 from classes import DEBUG
 from constructor import ConstList
+from statistics import Stats
 
 
 class VocapyApp(tk.Tk):
@@ -242,9 +243,14 @@ Antes de jugar debería añadir al menos {} términos al diccionario.
 
     def statsCall(self, event=None):
         self.unbind('<Control-e>')
-        statistics = Statistics(self)
-        statistics.wait_window()
-        self.bind('<Control-e>', self.statsCall)
+        stats = Stats(self)
+        # Check whether stats window was created
+        try:
+            stats.window.wait_window()
+        except AttributeError:
+            pass
+        finally:
+            self.bind('<Control-e>', self.statsCall)
 
     def menuBar(self):
         menuBar = tk.Menu(self)
@@ -356,7 +362,7 @@ Copyright (c) 2014 Alejandro Druetta\t
     def destroyWin(self, event=None):
         self.session.append_db()
         if DEBUG:
-            print("\n{}\n".format(self.session.sessions_lst))
+            print("\n{}\n".format(Session.sessions_lst()))
         self.destroy()
 
     def i18n(self):
@@ -383,21 +389,6 @@ Copyright (c) 2014 Alejandro Druetta\t
             if DEBUG:
                 print("\nError: {}".format(err))
         lang.install()
-
-
-class Statistics(tk.Toplevel):
-    def __init__(self, master):
-        super().__init__(master)
-        self.title(_('Estadísticas'))
-        self.resizable(0, 0)
-
-        self.bind('<Control-q>', self.destroyWin)
-
-        text = tk.Text(self)
-        text.pack()
-
-    def destroyWin(self, event=None):
-        self.destroy()
 
 
 def main():

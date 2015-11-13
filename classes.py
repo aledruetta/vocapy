@@ -1,9 +1,9 @@
 #! /usr/bin/env python3
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 
 # Script Name:          classes.py
 # Author:               Alejandro Druetta
-# Version:              0.3
+# Version:              0.4
 #
 # Description:          Aplicación para el aprendizaje de vocabulario de
 #                       lenguas extranjeras.
@@ -17,6 +17,7 @@ import sqlite3 as sql
 DATABASE = 'database.db'
 _PRAGMA = "PRAGMA foreign_keys = ON"
 DEBUG = True
+MAXVIEW = 20
 
 
 class VocapyWord:
@@ -232,16 +233,18 @@ class Session:
         except TypeError:
             return 0
 
-    @property
-    def sessions_lst(self):
-        """Lista de sesiones almacenadas en DB"""
+    @staticmethod
+    def sessions_lst():
+        """Retorna la lista de sesiones almacenadas en DB"""
 
         conn = sql.connect(DATABASE)
         with conn:
             cur = conn.cursor()
             fetch = cur.execute("SELECT * FROM sessions").fetchall()
-            fetch.sort(key=itemgetter(0))
-            return fetch
+            fetch.sort(key=itemgetter(0), reverse=True)
+
+            # Lista de objetos Session
+            return [Session(lt, a, g) for lt, a, g in fetch]
 
     def append_db(self):
         """Almacena la sesión actual a DB"""
@@ -254,6 +257,9 @@ class Session:
                 cur.execute("INSERT INTO sessions VALUES (?, ?, ?)", (
                     self.last_time, self.attempts, self.guess))
                 conn.commit()
+
+    def __repr__(self):
+        return "({}, {}, {})".format(self.last_time, self.attempts, self.guess)
 
 
 class PercentBar:
